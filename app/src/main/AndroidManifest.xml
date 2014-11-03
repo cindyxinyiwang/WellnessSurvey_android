@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.cindywang.wellnesssurvey" >
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".Login"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Signup"
+            android:label="@string/title_activity_signup"
+            android:parentActivityName=".Login" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.cindywang.wellnesssurvey.Login" />
+        </activity>
+        <activity
+            android:name=".QList"
+            android:label="@string/title_activity_qlist"
+            android:parentActivityName=".Login" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.cindywang.wellnesssurvey.Login" />
+        </activity>
+        <activity
+            android:name=".SingleItemView"
+            android:parentActivityName=".QList">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.cindywang.wellnesssurvey.QList"/>
+        </activity>
+
+    </application>
+
+</manifest>
