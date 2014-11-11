@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/username"
+            android:layout_toLeftOf="@+id/username"
             android:text="@string/username"
             android:id="@+id/textView"
          />
@@ -25,10 +25,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/password"
+            android:layout_toLeftOf="@+id/password"
             android:text="@string/password"
             android:id="@+id/textView2"
-            android:layout_alignTop="@id/password"
+            android:layout_alignTop="@+id/password"
 
          />
 
@@ -67,7 +67,8 @@
         android:text="@string/login"
         android:id="@+id/button2"
         android:layout_above="@+id/button1"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="logIn" />
 
 
 

@@ -1,14 +1,23 @@
 package com.example.cindywang.wellnesssurvey;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 
 public class Signup extends Activity {
+
+    FragmentManager fm = getFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +46,35 @@ public class Signup extends Activity {
     }
 
     public void toQList(View view){
-        Intent intent = new Intent(this, QList.class);
-        startActivity(intent);
+        EditText usernameView = (EditText) findViewById(R.id.username_new);
+        EditText passwordView = (EditText) findViewById(R.id.password_new);
+        EditText emailView = (EditText) findViewById(R.id.email_new);
+        String username = usernameView.getText().toString();
+        String password = passwordView.getText().toString();
+        String email = emailView.getText().toString();
+
+        ParseUser user = new ParseUser();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+
+        user.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    // Hooray! The user is logged in.
+                    Intent intent = new Intent(Signup.this, QList.class);
+                    startActivity(intent);
+                } else {
+                    // Signup failed. Look at the ParseException to see what happened.
+                    DFragment dFragment = new DFragment();
+                    dFragment.show(fm, "Error Signning Up!");
+                }
+
+            }
+        });
+
+
     }
 
 }

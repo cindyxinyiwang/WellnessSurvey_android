@@ -48,7 +48,7 @@ public class Login extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void logIn(){
+    public void logIn(View view){
         EditText usernameView = (EditText) findViewById(R.id.username);
         EditText passwordView = (EditText) findViewById(R.id.password);
         String username = usernameView.getText().toString();
@@ -59,7 +59,7 @@ public class Login extends Activity {
                 if (user != null) {
                     // Hooray! The user is logged in.
                     Intent i = new Intent(Login.this, QList.class);
-
+                    startActivity(i);
                 } else {
                     // Signup failed. Look at the ParseException to see what happened.
                     DFragment dFragment = new DFragment();
