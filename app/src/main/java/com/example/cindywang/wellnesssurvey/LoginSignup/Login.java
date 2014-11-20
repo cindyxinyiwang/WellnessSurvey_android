@@ -1,4 +1,4 @@
-package com.example.cindywang.wellnesssurvey;
+package com.example.cindywang.wellnesssurvey.LoginSignup;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -9,27 +9,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.cindywang.wellnesssurvey.ListView.QList;
+import com.example.cindywang.wellnesssurvey.R;
+import com.parse.LogInCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 
-public class Signup extends Activity {
+public class Login extends Activity {
 
     FragmentManager fm = getFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_login);
+        Parse.initialize(this, "7y3hW9Gibahq2gCpaTd5TfTH3xlrSao2PCleXr9E", "qVUTlfmiQatz6EvU1gqUBsDqzgO3ajcAGhbXpj4Q");
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.signup, menu);
+        getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
 
@@ -45,36 +47,30 @@ public class Signup extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toQList(View view){
-        EditText usernameView = (EditText) findViewById(R.id.username_new);
-        EditText passwordView = (EditText) findViewById(R.id.password_new);
-        EditText emailView = (EditText) findViewById(R.id.email_new);
+    public void logIn(View view){
+        EditText usernameView = (EditText) findViewById(R.id.username);
+        EditText passwordView = (EditText) findViewById(R.id.password);
         String username = usernameView.getText().toString();
         String password = passwordView.getText().toString();
-        String email = emailView.getText().toString();
-
-        ParseUser user = new ParseUser();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email);
-
-        user.signUpInBackground(new SignUpCallback() {
+        ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
-            public void done(ParseException e) {
-                if (e == null) {
+            public void done(ParseUser user, com.parse.ParseException e) {
+                if (user != null) {
                     // Hooray! The user is logged in.
-                    Intent intent = new Intent(Signup.this, QList.class);
-                    startActivity(intent);
+                    Intent i = new Intent(Login.this, QList.class);
+                    startActivity(i);
                 } else {
                     // Signup failed. Look at the ParseException to see what happened.
                     DFragment dFragment = new DFragment();
-                    dFragment.show(fm, "Error Signning Up!");
+                    dFragment.show(fm, "Login Error");
                 }
-
             }
         });
 
-
     }
 
+    public void signUp (View view){
+        Intent intent = new Intent(this, Signup.class);
+        startActivity(intent);
+    }
 }
