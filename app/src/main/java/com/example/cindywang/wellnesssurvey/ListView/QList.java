@@ -1,5 +1,6 @@
 package com.example.cindywang.wellnesssurvey.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 
 import com.example.cindywang.wellnesssurvey.R;
 import com.example.cindywang.wellnesssurvey.SingleItemView;
+import com.example.cindywang.wellnesssurvey.slider_answer;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -25,7 +27,6 @@ import com.parse.ParseQuery;
 public class QList extends Activity {
     // Declare Variables
     List<ParseObject> questionEntries;
-    List<String> listHeader;
 
     ProgressDialog mProgressDialog;
 
@@ -75,12 +76,21 @@ public class QList extends Activity {
             for (ParseObject quesEntry : questionEntries) {
                 String type = (String) quesEntry.get("type");
                 String aspect = (String) quesEntry.get("aspect");
-                Date end = (Date) quesEntry.get("endDate");
 
+                String expire = "";
+                Date end = (Date) quesEntry.get("endDate");
+                Date now = new Date();
+                long hour = (end.getTime() - now.getTime())/ (1000*3600);
+                if (hour < 1){
+                    long minute = (end.getTime() - now.getTime())/ (1000*60);
+                    expire = "Expire in " + minute + "minutes";
+                } else {
+                    expire = "Expire in " + hour + "hours";
+                }
                 questionListItem item = new questionListItem();
                 item.setqAspect(aspect);
                 item.setqCategory(type);
-                //item.setqExpire();
+                item.setqExpire(expire);
                 questionListItems.add(item);
             }
 
@@ -103,18 +113,41 @@ public class QList extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                     // Send single item click data to SingleItemView Class
-                    Intent i = new Intent(QList.this,
-                            SingleItemView.class);
+                    Intent i;
                     String aspect = questionListItems.get(position).getqAspect();
+                    //objects that need to be retrieved from Parse
+                    String answerType = null;
                     String question = null;
+                    List<String> config = new ArrayList<String>();
+                    String[] configArray = null;
+                    String questionId = null;
                     for (ParseObject qEntry:questionEntries) {
                         if (qEntry.get("aspect").equals(aspect)){
-                            question = (String) qEntry.get("Question");
+                            question = qEntry.getString("Question");
+                            answerType = qEntry.getString("answerType");
+                            //put arrays in config
+                            config = (List<String>) qEntry.get("config");
+                            configArray = new String[config.size()];
+                            config.toArray(configArray);
+
+                            questionId = qEntry.getString("objectId");
                             break;
                         }
                     }
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Question", question);
+                    bundle.putString("questionId", questionId);
+                    bundle.putStringArray("config", configArray);
+                    //start activity based on answerType
+                    if (answerType.equals("rate")){
+                        i = new Intent(QList.this, slider_answer.class);
+                    } else {
+                        i = new Intent(QList.this,
+                                SingleItemView.class);
+                    }
                     // Pass data "name" followed by the position
-                    i.putExtra("question", question);
+                    //serialize question entry, a little bit worse performance
+                    i.putExtras(bundle);
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }

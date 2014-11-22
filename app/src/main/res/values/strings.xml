@@ -16,6 +16,6 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">Parse Simple ListView</string>
     <string name="namelabel">Question:</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_slider_answer">Rate Answer</string>
 
 </resources>

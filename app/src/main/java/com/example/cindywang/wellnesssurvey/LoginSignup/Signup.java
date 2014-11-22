@@ -54,26 +54,31 @@ public class Signup extends Activity {
         String password = passwordView.getText().toString();
         String email = emailView.getText().toString();
 
-        ParseUser user = new ParseUser();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email);
+        if (username.isEmpty()){
+            DFragment dFragment = new DFragment();
+            dFragment.show(fm, "Please type in user name!");
+        } else {
+            ParseUser user = new ParseUser();
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setEmail(email);
 
-        user.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    // Hooray! The user is logged in.
-                    Intent intent = new Intent(Signup.this, QList.class);
-                    startActivity(intent);
-                } else {
-                    // Signup failed. Look at the ParseException to see what happened.
-                    DFragment dFragment = new DFragment();
-                    dFragment.show(fm, "Error Signning Up!");
+            user.signUpInBackground(new SignUpCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        // Hooray! The user is logged in.
+                        Intent intent = new Intent(Signup.this, QList.class);
+                        startActivity(intent);
+                    } else {
+                        // Signup failed. Look at the ParseException to see what happened.
+                        DFragment dFragment = new DFragment();
+                        dFragment.show(fm, "Error Signning Up!");
+                    }
+
                 }
-
-            }
-        });
+            });
+        }
 
 
     }
