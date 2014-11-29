@@ -50,6 +50,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.cindywang.wellnesssurvey.ListView.QList" />
         </activity>
+        <activity
+            android:name=".singleSelect_answer"
+            android:label="@string/title_activity_single_select_answer"
+            android:parentActivityName=".ListView.QList" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.cindywang.wellnesssurvey.ListView.QList" />
+        </activity>
+        <activity
+            android:name=".multiSelect_answer"
+            android:label="@string/title_activity_multi_select_answer"
+            android:parentActivityName=".ListView.QList" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.cindywang.wellnesssurvey.ListView.QList" />
+        </activity>
     </application>
 
 </manifest>

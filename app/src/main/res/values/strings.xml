@@ -17,5 +17,7 @@
     <string name="title_activity_main">Parse Simple ListView</string>
     <string name="namelabel">Question:</string>
     <string name="title_activity_slider_answer">Rate Answer</string>
+    <string name="title_activity_single_select_answer">singleSelect_answer</string>
+    <string name="title_activity_multi_select_answer">multiSelect_answer</string>
 
 </resources>

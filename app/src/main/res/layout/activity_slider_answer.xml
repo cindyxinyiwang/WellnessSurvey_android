@@ -52,7 +52,8 @@
         android:id="@+id/submitButton"
         android:layout_below="@id/seekBar"
         android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="submitAnswer" />
 
 
 </RelativeLayout>

@@ -5,11 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.SeekBar;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,36 +21,32 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class slider_answer extends Activity {
+public class multiSelect_answer extends Activity {
 
     TextView questionView;
-    TextView lowView;
-    TextView highView;
+    ListView listView;
     Bundle question;
-    SeekBar seekBar;
-    int seekbarAnswer = 0;
+    JSONArray answer;
 
     //values associated with question
     String questionId = "";
-    ParseObject questionPointer;
     int questionIndex = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_slider_answer);
+        setContentView(R.layout.activity_multi_select_answer);
+
         // Retrieve data from MainActivity on item click event
         Intent i = getIntent();
 
         //define variables
         String questionText = "";
-        //String low = "";
-        String high = "";
         String[] config = null;
 
         // Get the name
@@ -59,47 +56,25 @@ public class slider_answer extends Activity {
         questionId = question.getString("questionId");
         questionIndex = question.getInt("questionIndex");
 
-        final String low = config[0];
-        high = config[1];
-
-        // Locate the Views in slider_answer.xml
+        //set question view
         questionView = (TextView) findViewById(R.id.question);
-        lowView = (TextView) findViewById(R.id.lowBound);
-        highView = (TextView) findViewById(R.id.highBound);
-
-        // Load the text into the TextView
         questionView.setText(questionText);
-        lowView.setText(low);
-        highView.setText(high);
 
-        //set seekBar activity and value
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        //seekBar.setMax(Integer.valueOf(high) - Integer.valueOf(low));
+        //set list view
+        listView = (ListView) findViewById(R.id.multiSelectList);
+        //set the adapter for single selection
+        listView.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_single_choice,
+                android.R.id.text1, config));
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                seekbarAnswer = progress + Integer.valueOf(low);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.slider_answer, menu);
-
+        getMenuInflater().inflate(R.menu.multi_select_answer, menu);
         return true;
     }
 
@@ -115,15 +90,29 @@ public class slider_answer extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    //submit answer button activity
     public void submitAnswer(View view) {
+        SparseBooleanArray checked = listView.getCheckedItemPositions();
+        answer = new JSONArray();
+
+        for (int i = 0; i < checked.size(); i++){
+            if (checked.valueAt(i) == true) {
+                answer.put((String) listView.getItemAtPosition(checked.keyAt(i)));
+            }
+        }
+
+        if (answer.length() < 1) {
+            //no answer is selected
+
+            return;
+        }
 
         openAlert(view);
+
 
     }
 
     private void openAlert(View view) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(slider_answer.this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(multiSelect_answer.this);
         alertDialogBuilder.setTitle(this.getTitle()+ " decision");
         alertDialogBuilder.setMessage("Are you sure?");
         // set positive button: Yes message
@@ -140,10 +129,11 @@ public class slider_answer extends Activity {
                             //object is retrieved
                             // save answer and go back
 
+
                             ParseObject answerInProgress = new ParseObject("AnswerInProgress");
                             answerInProgress.put("questionId",questionId);
                             answerInProgress.put("user", ParseUser.getCurrentUser());
-                            answerInProgress.put("answer",seekbarAnswer+"");
+                            answerInProgress.put("answerArray",answer);
                             answerInProgress.put("question",parseObject);
                             answerInProgress.saveInBackground();
 
@@ -181,6 +171,4 @@ public class slider_answer extends Activity {
         // show alert
         alertDialog.show();
     }
-
-
 }
