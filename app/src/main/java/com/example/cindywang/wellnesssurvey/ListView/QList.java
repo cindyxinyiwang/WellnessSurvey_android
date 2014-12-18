@@ -11,10 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.cindywang.wellnesssurvey.R;
-import com.example.cindywang.wellnesssurvey.SingleItemView;
-import com.example.cindywang.wellnesssurvey.multiSelect_answer;
-import com.example.cindywang.wellnesssurvey.singleSelect_answer;
-import com.example.cindywang.wellnesssurvey.slider_answer;
+import com.example.cindywang.wellnesssurvey.answerList.answerList;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -22,17 +19,16 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class QList extends Activity {
     // Declare Variables
-    List<ParseObject> questionEntries;
+    List<ParseObject> typeEntries;
 
     ProgressDialog mProgressDialog;
 
     ListView listView;
-    ArrayList<questionListItem> questionListItems;
+    ArrayList<questionListItem> typeListItems;
     //check if we need to delete the index of the question
     String deleteId = "";
 
@@ -68,11 +64,11 @@ public class QList extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
 
-            // Locate the class table named SurveyQuestion
-            questionEntries = new ArrayList<ParseObject>();
-            ParseQuery<ParseObject> questQuery = new ParseQuery<ParseObject>("SurveyQuestion");
+            // Locate the class table named Type
+            typeEntries = new ArrayList<ParseObject>();
+            ParseQuery<ParseObject> questQuery = new ParseQuery<ParseObject>("Type");
             try {
-                questionEntries = questQuery.find();
+                typeEntries = questQuery.find();
             } catch (ParseException e){
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -81,25 +77,23 @@ public class QList extends Activity {
             ParseQuery<ParseObject> answerInProgress = ParseQuery.getQuery("AnswerInProgress");
             answerInProgress.whereEqualTo("user", ParseUser.getCurrentUser());
             // Put data into child list
-            questionListItems = new ArrayList<questionListItem>();
+            typeListItems = new ArrayList<questionListItem>();
             // set counter for questionIndex
             //TODO: pos is the index of the question in already modified list
 
-            for (ParseObject quesEntry : questionEntries) {
-                if (quesEntry.getObjectId().equals(deleteId))
-                    continue;
-                answerInProgress.whereEqualTo("questionId",quesEntry.getObjectId());
+            for (ParseObject typeEntry : typeEntries) {
+                answerInProgress.whereEqualTo("questionId", typeEntry.getObjectId());
                 try {
                     if (answerInProgress.count() > 0)
-                        continue;
+                        //TODO: Make entry unclickable
+                        ;
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String type = (String) quesEntry.get("type");
-                String aspect = (String) quesEntry.get("aspect");
-
+                String type = (String) typeEntry.get("typeName");
+/*
                 String expire = "";
-                Date end = (Date) quesEntry.get("endDate");
+                Date end = (Date) typeEntry.get("endDate");
                 Date now = new Date();
                 long hour = (end.getTime() - now.getTime())/ (1000*3600);
                 if (hour < 1){
@@ -107,12 +101,10 @@ public class QList extends Activity {
                     expire = "Expire in " + minute + "minutes";
                 } else {
                     expire = "Expire in " + hour + "hours";
-                }
+                } */
                 questionListItem item = new questionListItem();
-                item.setqAspect(aspect);
-                item.setqCategory(type);
-                item.setqExpire(expire);
-                questionListItems.add(item);
+                item.setqType(type);
+                typeListItems.add(item);
             }
 
             return null;
@@ -128,38 +120,44 @@ public class QList extends Activity {
 
 
             // Binds the Adapter to the ListView
-            listView.setAdapter(new listViewBaseAdapter(QList.this, questionListItems));
+            listView.setAdapter(new listViewBaseAdapter(QList.this, typeListItems));
             // Capture button clicks on ListView items
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                     // Send single item click data to SingleItemView Class
                     Intent i;
-                    String aspect = questionListItems.get(position).getqAspect();
+
+                    String type = typeListItems.get(position).getqType();
                     //objects that need to be retrieved from Parse
-                    String answerType = null;
+                    String prompt = null;
+                    /*
                     String question = null;
                     List<String> config = new ArrayList<String>();
                     String[] configArray = null;
-                    String questionId = null;
+                    String questionId = null;*/
 
-                    for (ParseObject qEntry : questionEntries) {
-                        if (qEntry.get("aspect").equals(aspect)) {
-                            question = qEntry.getString("Question");
-                            answerType = qEntry.getString("answerType");
+                    for (ParseObject tEntry : typeEntries) {
+                        if (tEntry.get("typeName").equals(type)) {
+                            prompt = tEntry.getString("prompt");
+                            /*
+                            question = tEntry.getString("Question");
+                            answerType = tEntry.getString("answerType");
                             //put arrays in config
-                            config = (List<String>) qEntry.get("config");
+                            config = (List<String>) tEntry.get("config");
                             configArray = new String[config.size()];
                             config.toArray(configArray);
 
-                            questionId = qEntry.getObjectId();
+                            questionId = tEntry.getObjectId();*/
 
                             break;
                         }
                     }
+
                     Bundle bundle = new Bundle();
-                    bundle.putString("Question", question);
-                    bundle.putString("questionId", questionId);
+                    bundle.putString("typeName", type);
+                    bundle.putString("prompt", prompt);
+                    /*
                     bundle.putStringArray("config", configArray);
                     bundle.putInt("questionIndex", position);
                     //start activity based on answerType
@@ -175,6 +173,9 @@ public class QList extends Activity {
                     }
                     // Pass data "name" followed by the position
                     //serialize question entry, a little bit worse performance
+                    i.putExtras(bundle); */
+
+                    i = new Intent(QList.this, answerList.class);
                     i.putExtras(bundle);
                     // Open SingleItemView.java Activity
                     startActivity(i);

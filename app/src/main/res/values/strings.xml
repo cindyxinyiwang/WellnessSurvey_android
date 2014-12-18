@@ -19,5 +19,8 @@
     <string name="title_activity_slider_answer">Rate Answer</string>
     <string name="title_activity_single_select_answer">singleSelect_answer</string>
     <string name="title_activity_multi_select_answer">multiSelect_answer</string>
+    <string name="title_activity_answer_llist">answerLlist</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 
 </resources>

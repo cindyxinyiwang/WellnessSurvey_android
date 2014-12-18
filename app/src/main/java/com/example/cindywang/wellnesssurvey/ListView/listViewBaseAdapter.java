@@ -49,7 +49,7 @@ public class listViewBaseAdapter extends BaseAdapter {
             //inflate layout
             convertView = mInflater.inflate(R.layout.list_item, null);
             holder = new ViewHolder();
-            holder.aspect = (TextView) convertView.findViewById(R.id.questionAspect);
+            holder.type = (TextView) convertView.findViewById(R.id.questionType);
             holder.category = (TextView) convertView.findViewById(R.id.questionCategory);
             holder.expire = (TextView) convertView.findViewById(R.id.expireTime);
 
@@ -58,7 +58,7 @@ public class listViewBaseAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.aspect.setText(questionListItems.get(position).getqAspect());
+        holder.type.setText(questionListItems.get(position).getqType());
         holder.category.setText(questionListItems.get(position).getqCategory());
         holder.expire.setText(questionListItems.get(position).getqExpire());
 
@@ -66,7 +66,7 @@ public class listViewBaseAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        TextView aspect;
+        TextView type;
         TextView category;
         TextView expire;
     }

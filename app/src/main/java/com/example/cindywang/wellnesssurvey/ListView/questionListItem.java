@@ -4,24 +4,24 @@ package com.example.cindywang.wellnesssurvey.ListView;
  * Created by cindywang on 11/19/14.
  */
 public class questionListItem {
-    private String qAspect = "";
+    private String qType = "";
     private String qCategory = "";
     private String qExpire = "";
 
-    public void setqAspect(String qAspect) {
-        this.qAspect = qAspect;
+    public void setqType(String qType) {
+        this.qType = qType;
     }
 
-    public void setqCategory(String qCategory) {
-        this.qCategory = qCategory;
+    public void setqCategory(String qType) {
+        this.qCategory = qType;
     }
 
     public void setqExpire(String qExpire) {
         this.qExpire = qExpire;
     }
 
-    public String getqAspect() {
-        return qAspect;
+    public String getqType() {
+        return qType;
     }
 
     public String getqCategory() {

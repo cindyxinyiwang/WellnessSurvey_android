@@ -14,7 +14,7 @@
         android:layout_width="166dp"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/questionAspect"
+        android:id="@+id/questionType"
         android:layout_gravity="left"
         style="@android:style/TextAppearance.Medium"
         />
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/questionCategory"
-        android:layout_toRightOf="@id/questionAspect"
+        android:layout_toRightOf="@id/questionType"
         style="@android:style/TextAppearance.Medium"
         />
     <TextView
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/expireTime"
-        android:layout_below="@id/questionAspect"
+        android:layout_below="@id/questionType"
         style="@android:style/TextAppearance.Small"
         />
 </RelativeLayout>

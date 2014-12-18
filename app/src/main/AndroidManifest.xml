@@ -66,6 +66,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.cindywang.wellnesssurvey.ListView.QList" />
         </activity>
+        <activity
+            android:name=".answerList.answerList"
+            android:label="@string/title_activity_answer_llist"
+            android:parentActivityName=".ListView.QList">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.cindywang.wellnesssurvey.ListView.QList" />
+        </activity>
     </application>
 
 </manifest>
