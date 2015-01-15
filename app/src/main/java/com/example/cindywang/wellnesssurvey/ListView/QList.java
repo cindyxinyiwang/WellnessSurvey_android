@@ -18,7 +18,11 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class QList extends Activity {
@@ -91,19 +95,54 @@ public class QList extends Activity {
                     e.printStackTrace();
                 }
                 String type = (String) typeEntry.get("typeName");
-/*
-                String expire = "";
-                Date end = (Date) typeEntry.get("endDate");
-                Date now = new Date();
-                long hour = (end.getTime() - now.getTime())/ (1000*3600);
-                if (hour < 1){
-                    long minute = (end.getTime() - now.getTime())/ (1000*60);
-                    expire = "Expire in " + minute + "minutes";
+                String prompt = (String) typeEntry.get("prompt");
+                //get jsonarray and convert it to list
+                List<String> time = new ArrayList<String>();
+                JSONArray jsonArray = typeEntry.getJSONArray("issueTime");
+                if (jsonArray!= null){
+                    int len = jsonArray.length();
+                    for (int i=0; i<len; i++){
+                        try {
+                            time.add(jsonArray.get(i).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                
+                questionListItem item = new questionListItem(type, prompt, time);
+                //check if current time is within issue time range
+                //if yes, set index of current time in the time list
+                final Calendar c = Calendar.getInstance();
+                int mHour = c.get(Calendar.HOUR_OF_DAY);
+                int mMinute = c.get(Calendar.MINUTE);
+                int timeIndexCounter = 0;
+                if (time.size() == 0){
+                    //entry stays open all day
+                    item.setClickable(true);
+
                 } else {
-                    expire = "Expire in " + hour + "hours";
-                } */
-                questionListItem item = new questionListItem();
-                item.setqType(type);
+                    for (String tString : time) {
+                        try {
+                            if (submitted (timeIndexCounter, typeEntry)){
+                                //if question issued in this time period has already been submitted, do nothing
+
+                            } else {
+                                String[] hourMinute = tString.split(":");
+                                int timeDiff = (mHour * 60 + mMinute) - (Integer.parseInt(hourMinute[0]) * 60 + Integer.parseInt(hourMinute[1]));
+                                if (timeDiff >= 0 && timeDiff <= 90) {
+                                    item.setClickable(true);
+                                    item.setTimeIndex(timeIndexCounter);
+                                    break;
+                                }
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        timeIndexCounter++;
+                    }
+                }
+                //add item to list
                 typeListItems.add(item);
             }
 
@@ -125,63 +164,43 @@ public class QList extends Activity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                    // Send single item click data to SingleItemView Class
-                    Intent i;
+                    questionListItem currentItem = typeListItems.get(position);
+                    //only clickable if the current item is within issue time
+                    if (currentItem.getClickable()) {
+                        // Send single item click data to SingleItemView Class
+                        Intent i;
 
-                    String type = typeListItems.get(position).getqType();
-                    //objects that need to be retrieved from Parse
-                    String prompt = null;
-                    /*
-                    String question = null;
-                    List<String> config = new ArrayList<String>();
-                    String[] configArray = null;
-                    String questionId = null;*/
+                        String type = currentItem.getqType();
+                        String prompt = currentItem.getqPrompt();
+                        int issueTimeIndex = currentItem.getTimeIndex();
 
-                    for (ParseObject tEntry : typeEntries) {
-                        if (tEntry.get("typeName").equals(type)) {
-                            prompt = tEntry.getString("prompt");
-                            /*
-                            question = tEntry.getString("Question");
-                            answerType = tEntry.getString("answerType");
-                            //put arrays in config
-                            config = (List<String>) tEntry.get("config");
-                            configArray = new String[config.size()];
-                            config.toArray(configArray);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("typeName", type);
+                        bundle.putString("prompt", prompt);
+                        bundle.putInt("issueTimeIndex", issueTimeIndex);
 
-                            questionId = tEntry.getObjectId();*/
-
-                            break;
-                        }
+                        i = new Intent(QList.this, answerList.class);
+                        i.putExtras(bundle);
+                        // Open SingleItemView.java Activity
+                        startActivity(i);
                     }
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("typeName", type);
-                    bundle.putString("prompt", prompt);
-                    /*
-                    bundle.putStringArray("config", configArray);
-                    bundle.putInt("questionIndex", position);
-                    //start activity based on answerType
-                    if (answerType.equals("rate")) {
-                        i = new Intent(QList.this, slider_answer.class);
-                    } else if (answerType.equals("singleSelect")) {
-                        i = new Intent(QList.this, singleSelect_answer.class);
-                    } else if (answerType.equals("multiSelect")){
-                        i = new Intent(QList.this, multiSelect_answer.class);
-                    } else {
-                        i = new Intent(QList.this,
-                                SingleItemView.class);
-                    }
-                    // Pass data "name" followed by the position
-                    //serialize question entry, a little bit worse performance
-                    i.putExtras(bundle); */
-
-                    i = new Intent(QList.this, answerList.class);
-                    i.putExtras(bundle);
-                    // Open SingleItemView.java Activity
-                    startActivity(i);
                 }
             });
 
+        }
+
+        //check if the current user has submitted answers to the question of a particular type
+        boolean submitted(int timeIndex, ParseObject type) throws ParseException {
+            ParseQuery<ParseObject> currentAnswerQuery = ParseQuery.getQuery("answeredToday");
+            currentAnswerQuery.whereEqualTo("type", type);
+            currentAnswerQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+            currentAnswerQuery.whereEqualTo("issueIndex", timeIndex);
+
+            int entryCount = 0;
+
+            entryCount = currentAnswerQuery.count();
+            if (entryCount > 0) return true;
+            else return false;
         }
 
 

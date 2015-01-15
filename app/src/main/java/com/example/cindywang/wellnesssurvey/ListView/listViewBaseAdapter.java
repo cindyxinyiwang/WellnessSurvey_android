@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cindywang.wellnesssurvey.R;
@@ -50,24 +51,26 @@ public class listViewBaseAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.list_item, null);
             holder = new ViewHolder();
             holder.type = (TextView) convertView.findViewById(R.id.questionType);
-            holder.category = (TextView) convertView.findViewById(R.id.questionCategory);
-            holder.expire = (TextView) convertView.findViewById(R.id.expireTime);
+            holder.checkMark = (ImageView) convertView.findViewById(R.id.checkMarkIMG);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.type.setText(questionListItems.get(position).getqType());
-        holder.category.setText(questionListItems.get(position).getqCategory());
-        holder.expire.setText(questionListItems.get(position).getqExpire());
+        questionListItem currentItem = questionListItems.get(position);
+        holder.type.setText(currentItem.getqType());
+        if (currentItem.getClickable()){
+            holder.checkMark.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            holder.checkMark.setImageResource(android.R.drawable.btn_star_big_off);
+        }
 
         return convertView;
     }
 
     static class ViewHolder {
         TextView type;
-        TextView category;
-        TextView expire;
+        ImageView checkMark;
     }
 }
